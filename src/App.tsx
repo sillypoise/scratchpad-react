@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { api } from "./data/api";
-import data from "./data/data-nested.json";
+import { useState } from "react";
+import { initialTravelPlan } from "./data/places";
+import data from "./data/data-plain.json";
 
 interface INode {
     id: string;
     fileName: string;
-    children: Array<INode> | null;
+    children: Array<string>;
+    root?: boolean;
 }
 
 function App() {
@@ -20,53 +21,59 @@ function App() {
 }
 
 function Tree() {
+    let root = data[0];
+    let filesById = root.children;
     return (
         <ul>
-            <Node node={data} />
+            <Node id={root.id} data={data} />
         </ul>
     );
 }
 
-function Node({ node }: { node: INode }) {
-    if (node.children === null) {
-        return <File node={node} />;
-    } else {
-        return <Directory node={node} />;
+function Node({ id, data }: { id: string; data: Array<INode> }) {
+    let file = data.find((node) => node.id === id);
+    if (file) {
+        if (file.children.length) {
+            return <Directory file={file} />;
+        } else {
+            return <File file={file} />;
+        }
     }
+    return null;
 }
 
-function File({ node }: { node: INode }) {
+function File({ file }: { file: INode }) {
     return (
         <li
             className={
-                `mbs-2xs` +
+                `mbs-xs` +
                 " " +
                 `${
-                    node.fileName.endsWith("server.tsx")
-                        ? `text-dark-tomato-9`
-                        : `text-dark-indigo-9`
+                    file.fileName.endsWith("server.tsx")
+                        ? "text-dark-tomato-9"
+                        : "text-dark-indigo-9"
                 }`
             }
         >
-            {node.fileName}
+            {file.fileName}
         </li>
     );
 }
 
-function Directory({ node }: { node: INode }) {
+function Directory({ file }: { file: INode }) {
     let [isExpanded, setIsExpanded] = useState(true);
     return (
         <li className="mbs-xs">
             <button
-                className="bg-scheme-dark-neutral-surface-3 pli-2xs rounded-md"
                 onClick={() => setIsExpanded(!isExpanded)}
+                className="pli-2xs rounded-md bg-scheme-dark-neutral-surface-3"
             >
-                {node.fileName}
+                {file.fileName}
             </button>
             {isExpanded ? (
                 <ul>
-                    {node.children?.map((child) => (
-                        <Node key={child.id} node={child} />
+                    {file.children.map((child) => (
+                        <Node key={child} id={child} data={data} />
                     ))}
                 </ul>
             ) : null}
