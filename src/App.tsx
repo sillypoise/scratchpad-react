@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { initialTravelPlan } from "./data/places";
 import data from "./data/data-plain.json";
+import { Mock } from "./Mock";
+import { Fundamentals } from "./Fundamentals";
 
 interface INode {
     id: string;
@@ -14,7 +16,9 @@ function App() {
         <main className="mlb-l">
             <article className="stack center">
                 <h1 className="text-3">React Scratchpad</h1>
-                <Tree />
+                {/* <Tree /> */}
+                <Mock />
+                {/* <Fundamentals /> */}
             </article>
         </main>
     );
