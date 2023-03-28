@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
-import { initialTravelPlan } from "./data/places";
-import data from "./data/data-plain.json";
-import { Mock } from "./Mock";
-import { Fundamentals } from "./Fundamentals";
+import React from "react";
 
 interface INode {
   id: string;
@@ -11,78 +7,76 @@ interface INode {
   root?: boolean;
 }
 
-function App() {
-  return (
-    <main className="mlb-l">
-      <article className="stack center">
-        <h1 className="text-3">React Scratchpad</h1>
-        <Tree />
-        {/* <Mock /> */}
-        {/* <Fundamentals /> */}
-      </article>
-    </main>
-  );
-}
-
-function Tree() {
-  let root = data[0];
-  let filesById = root.children;
-  return (
-    <ul>
-      <Node id={root.id} data={data} />
-    </ul>
-  );
-}
-
-function Node({ id, data }: { id: string; data: Array<INode> }) {
-  let file = data.find((node) => node.id === id);
-  if (file) {
-    if (file.children.length) {
-      return <Directory file={file} />;
-    } else {
-      return <File file={file} />;
-    }
+class App extends React.Component {
+  render() {
+    return (
+      <main className="mlb-l">
+        <article className="stack center">
+          <h1 className="text-1">Color Picker</h1>
+          <ColorPicker
+            colorPickerOptions={[
+              "#5d77f5",
+              "#0fd085",
+              "#ffba5b",
+              "#f95e62",
+              "lightpink",
+            ]}
+            initialSelectedColor={"black"}
+          />
+        </article>
+      </main>
+    );
   }
-  return null;
 }
 
-function File({ file }: { file: INode }) {
-  return (
-    <li
-      className={
-        `mbs-xs` +
-        " " +
-        `${
-          file.fileName.endsWith("server.tsx")
-            ? "text-dark-tomato-9"
-            : "text-dark-indigo-9"
-        }`
-      }
-    >
-      {file.fileName}
-    </li>
-  );
-}
+type IColorPickerProps = {
+  colorPickerOptions: Array<string>;
+  initialSelectedColor: string;
+};
 
-function Directory({ file }: { file: INode }) {
-  let [isExpanded, setIsExpanded] = useState(true);
-  return (
-    <li className="mbs-xs">
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="pli-2xs rounded-md bg-scheme-dark-neutral-surface-3"
-      >
-        {file.fileName}
-      </button>
-      {isExpanded ? (
-        <ul>
-          {file.children.map((child) => (
-            <Node key={child} id={child} data={data} />
-          ))}
-        </ul>
-      ) : null}
-    </li>
-  );
-}
+type IColorPickerState = {
+  selectedColor: string;
+};
 
 export default App;
+
+class ColorPicker extends React.Component<
+  IColorPickerProps,
+  IColorPickerState
+> {
+  constructor(props: IColorPickerProps) {
+    super(props);
+    this.state = {
+      selectedColor: this.props.initialSelectedColor,
+    };
+  }
+
+  handleColorChange(color: string) {
+    this.setState({ selectedColor: color });
+  }
+
+  render() {
+    return (
+      <article className="stack">
+        <div
+          className="box p-3xl border-none"
+          style={{ backgroundColor: this.state.selectedColor }}
+        >
+          <p className="text-5">{this.state.selectedColor}</p>
+        </div>
+        <article className="cluster">
+          {this.props.colorPickerOptions.map((color) => (
+            <button
+              onClick={() => this.handleColorChange(color)}
+              key={color}
+              className="box border-none pointer"
+              style={{ backgroundColor: color }}
+            >
+              {color}
+            </button>
+          ))}
+        </article>
+      </article>
+    );
+  }
+}
